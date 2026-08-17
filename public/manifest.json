@@ -1,0 +1,18 @@
+{
+  "name": "Sudoku Live",
+  "short_name": "Sudoku Live",
+  "description": "Solve it. Master it. Let them watch. Real-time multiplayer Sudoku with Varshini AI.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05040f",
+  "theme_color": "#05040f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
