@@ -211,7 +211,7 @@ export default function GamePage({ params }: { params: Promise<{ code: string }>
             <h1 className="text-3xl font-black text-rose-300">GAME OVER</h1>
             <p className="mt-2 text-sm text-slate-400">Too many mistakes — but every attempt makes you sharper!</p>
             <div className="mt-4">
-              <VarshiniBot line={{ text: "Parava illa di, next round semma-ah try pannu! 💜", mood: "concerned" }} layout="panel" />
+              <VarshiniBot line={{ text: "Parava illa di, next round semma-ah try pannu! 💜", mood: "worried" }} layout="panel" />
             </div>
             <button
               onClick={() => router.push("/play")}

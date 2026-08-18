@@ -33,7 +33,7 @@ export function EmptyState({
       animate={{ opacity: 1, y: 0 }}
       className="glass mx-auto flex max-w-sm flex-col items-center gap-4 rounded-3xl border border-white/10 p-8 text-center"
     >
-      <VarshiniBot line={{ text: title, mood: "concerned" }} layout="panel" />
+      <VarshiniBot line={{ text: title, mood: "worried" }} layout="panel" />
       {subtitle && <p className="text-sm text-slate-400">{subtitle}</p>}
       {actionLabel && onAction && (
         <button

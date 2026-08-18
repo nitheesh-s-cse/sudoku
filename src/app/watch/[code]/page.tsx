@@ -10,6 +10,7 @@ import { VarshiniBot } from "@/components/VarshiniBot";
 import { LoadingState, EmptyState } from "@/components/StateViews";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { useSpectator } from "@/hooks/useSpectator";
+import { spectatorCommentary } from "@/lib/varshini";
 import confetti from "canvas-confetti";
 
 export default function WatchRoomPage({ params }: { params: Promise<{ code: string }> }) {
@@ -81,11 +82,14 @@ export default function WatchRoomPage({ params }: { params: Promise<{ code: stri
 
         <div className="mt-6 flex justify-center">
           <VarshiniBot
-            line={
-              room.status === "completed"
-                ? { text: `${room.playerName} finished the puzzle! Semma solve! 🏆`, mood: "celebrating" }
-                : { text: `Naan ${room.playerName} solve panradha kwatch panren 💜`, mood: "idle" }
-            }
+            line={spectatorCommentary(
+              room.playerName,
+              room.status,
+              room.lastAction?.type,
+              room.lastAction ? { correct: room.lastAction.correct } : undefined,
+              room.currentStreak,
+              room.progressPercent
+            )}
             layout="panel"
           />
         </div>

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { RoomPublicState } from "@/types/game";
 import type { ConnState } from "@/components/ConnectionStatus";
 import { getRoomToken } from "@/lib/client-storage";
-import { reactToHint, reactToMove, reactToStuck, reactToVictory, type VarshiniLine } from "@/lib/varshini";
+import { greetingForRoom, reactToHint, reactToMove, reactToSpectatorJoin, reactToStuck, reactToVictory, type VarshiniLine } from "@/lib/varshini";
 import { playSound } from "@/lib/sound";
 import { isSoundEnabled } from "@/lib/client-storage";
 
@@ -39,6 +39,7 @@ export function usePlayerGame(roomCode: string): UsePlayerGameResult {
   const busyRef = useRef(false);
   const stuckTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const soundEnabledRef = useRef(true);
+  const spectatorCountRef = useRef(0);
 
   useEffect(() => {
     soundEnabledRef.current = isSoundEnabled();
@@ -76,6 +77,8 @@ export function usePlayerGame(roomCode: string): UsePlayerGameResult {
           } else {
             setRoom(data.room);
             setElapsed(data.room.elapsedSeconds);
+            spectatorCountRef.current = data.room.spectatorCount;
+            setVarshiniLine(greetingForRoom(data.room.playerName));
             setConnState("connected");
             resetStuckTimer();
           }
@@ -113,11 +116,18 @@ export function usePlayerGame(roomCode: string): UsePlayerGameResult {
     if (roomStatus !== "playing" || !tokenRef.current) return;
     const heartbeat = setInterval(async () => {
       try {
-        await fetch(`/api/rooms/${roomCode}`, {
+        const res = await fetch(`/api/rooms/${roomCode}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ playerToken: tokenRef.current, elapsedSeconds: elapsedRef.current }),
         });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.room && data.room.spectatorCount > spectatorCountRef.current) {
+            setVarshiniLine(reactToSpectatorJoin(data.room.spectatorCount));
+            spectatorCountRef.current = data.room.spectatorCount;
+          }
+        }
         setConnState("connected");
       } catch {
         setConnState("reconnecting");
@@ -151,6 +161,7 @@ export function usePlayerGame(roomCode: string): UsePlayerGameResult {
               difficulty: data.room.difficulty,
               elapsedSeconds: data.room.elapsedSeconds,
               unitCompleted: data.moveResult.unitCompleted,
+              playerName: data.room.playerName,
             }),
           );
         }
