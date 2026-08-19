@@ -9,22 +9,26 @@ const MOOD_RING: Record<VarshiniMood, string> = {
   idle: "shadow-[0_0_24px_4px_rgba(217,70,239,0.35)] ring-fuchsia-400/40",
   happy: "shadow-[0_0_32px_8px_rgba(52,211,153,0.45)] ring-emerald-400/50",
   excited: "shadow-[0_0_36px_10px_rgba(245,158,11,0.55)] ring-amber-400/60",
-  worried: "shadow-[0_0_28px_6px_rgba(251,113,133,0.45)] ring-rose-400/50",
-  thinking: "shadow-[0_0_28px_6px_rgba(56,189,248,0.45)] ring-sky-400/50",
   playful: "shadow-[0_0_32px_8px_rgba(236,72,153,0.5)] ring-pink-400/50",
+  worried: "shadow-[0_0_28px_6px_rgba(251,113,133,0.45)] ring-rose-400/50",
+  caring: "shadow-[0_0_32px_8px_rgba(192,132,252,0.5)] ring-purple-300/50",
+  thinking: "shadow-[0_0_28px_6px_rgba(56,189,248,0.45)] ring-sky-400/50",
   proud: "shadow-[0_0_36px_10px_rgba(168,85,247,0.55)] ring-purple-400/60",
-  surprised: "shadow-[0_0_36px_10px_rgba(250,204,21,0.55)] ring-yellow-400/60",
+  shocked: "shadow-[0_0_36px_10px_rgba(250,204,21,0.55)] ring-yellow-400/60",
+  celebrating: "shadow-[0_0_40px_12px_rgba(217,70,239,0.6)] ring-fuchsia-400/70",
 };
 
 const MOOD_EMOJI: Record<VarshiniMood, string> = {
   idle: "💜",
   happy: "😊",
   excited: "🔥",
-  worried: "😅",
-  thinking: "🤔",
   playful: "😏",
-  proud: "🥹",
-  surprised: "😳",
+  worried: "😅",
+  caring: "🥹",
+  thinking: "🤔",
+  proud: "😌",
+  shocked: "😳",
+  celebrating: "🎉",
 };
 
 interface VarshiniBotProps {
@@ -47,7 +51,7 @@ export function VarshiniBot({ line, size = "md", layout = "panel" }: VarshiniBot
 
     const autoClearTimer = setTimeout(() => {
       setVisibleLine(null);
-    }, 5200);
+    }, 5500);
 
     return () => {
       clearTimeout(thinkTimer);
@@ -61,13 +65,16 @@ export function VarshiniBot({ line, size = "md", layout = "panel" }: VarshiniBot
   const getMotionAnimation = () => {
     switch (mood) {
       case "excited":
+      case "celebrating":
         return { scale: [1, 1.12, 1], rotate: [0, 3, -3, 0] };
-      case "surprised":
+      case "shocked":
         return { scale: [1, 1.2, 1] };
       case "playful":
         return { rotate: [0, 6, -6, 0], scale: [1, 1.05, 1] };
       case "worried":
         return { x: [0, -3, 3, 0] };
+      case "caring":
+        return { scale: [1, 1.04, 1], y: [0, -2, 0] };
       case "thinking":
         return { scale: [1, 1.05, 1] };
       case "proud":
@@ -116,7 +123,7 @@ export function VarshiniBot({ line, size = "md", layout = "panel" }: VarshiniBot
               exit={{ opacity: 0 }}
               className="glass mt-1 rounded-2xl rounded-tl-sm px-3 py-2 text-xs italic text-slate-400 flex items-center justify-center gap-1"
             >
-              <span>Varshini is thinking...</span>
+              <span>Varshini is watching...</span>
               <motion.span
                 animate={{ opacity: [0.2, 1, 0.2] }}
                 transition={{ duration: 0.8, repeat: Infinity }}

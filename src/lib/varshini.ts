@@ -1,15 +1,18 @@
-// Varshini AI — Personalised Tanglish Companion Engine
-// Cute, playful, caring, encouraging, supportive & slightly teasing female companion.
+// 💜 VARSHINI — FINAL HUMAN-LIKE GIRLY DIALOGUE SYSTEM
+// 100% Tanglish in English letters. Zero Tamil Unicode.
+// Cute, playful, caring, encouraging, slightly possessive/teasing female companion.
 
 export type VarshiniMood =
   | "idle"
   | "happy"
   | "excited"
-  | "worried"
-  | "thinking"
   | "playful"
+  | "worried"
+  | "caring"
+  | "thinking"
   | "proud"
-  | "surprised";
+  | "shocked"
+  | "celebrating";
 
 export interface VarshiniLine {
   text: string;
@@ -27,33 +30,60 @@ export interface MoveContext {
   playerName?: string;
 }
 
-const NICKNAMES = ["di", "thango", "chellam", "pondati", "dear", "kutty", "ma", "boss"];
-let lastNickname = "";
+// -------------------------------------------------------------------
+// DIALOGUE POOLS
+// -------------------------------------------------------------------
 
-function getRandomNickname(): string {
-  const pool = NICKNAMES.filter((n) => n !== lastNickname);
-  const picked = pool[Math.floor(Math.random() * pool.length)];
-  lastNickname = picked;
-  return picked;
-}
+const GREETING_NEW_PLAYER: string[] = [
+  "Heyyy! 👀 Naan Varshini 💜 Ready ah play pannalaama?",
+  "Hii! Naan Varshini 😌 Innaiku namma Sudoku partner naan dhaan.",
+  "Hey {name}! 👋 Ready ah? Oru semma game podalaama?",
+  "Hiii {name} 💜 Naan Varshini. Start pannalama?",
+  "Awww finally vandhutiya 😌 Ready ah chellam?",
+  "Heyyy! 😌 Sudoku-ku ready ah? Naan already ready.",
+  "Va di... illa wait, naan dhaan unakku companion 😂 Start pannalaama?",
+];
+
+const GREETING_RETURNING_PLAYER: string[] = [
+  "Ahaa, thirumbi vandhutiya 😌",
+  "Welcome back diii 💜",
+  "Enna thango, innaiku enna challenge?",
+  "Pondati back to Sudoku ah? 👀",
+  "Heyyy, miss pannita maari irundhuchu 😂",
+  "Okayyy, comeback time ah? 🔥",
+];
 
 const CORRECT_MOVE_LINES: string[] = [
   "Super di! 🔥",
   "Nalla move di!",
-  "Heyy nalla vilayadura di 😌",
-  "Mass move, chellam! 🔥",
+  "Heyy nalla vilayadura 😌",
+  "Mass move, chellam!",
   "Semma correct di!",
-  "Adha dhaan expect panninen, thango 😎",
-  "Aww super solve panra di 💜",
-  "Nice one, pondati! 😌",
-  "Correct-ah kandupidichitta di!",
+  "Ahaa, adha dhaan expect panninen 😎",
+  "Aww super solve panra 💜",
+  "Nice one, pondati!",
+  "Correct-ah kandupidichitta!",
   "Un Sudoku skills vera level 🔥",
-  "Ithuku dhaan sonnen, nee genius nu 💜",
-  "Clean move di! Neat-ah irukku.",
-  "Ahaaa! Idhu semma move chellam 👀",
-  "Good one di, keep going! 🔥",
+  "Ithuku dhaan sonnen, nee genius nu 😌",
+  "Clean move! Neat-ah irukku.",
+  "Ahaaa, idhu semma move chellam 👀",
+  "Good one di, keep going!",
   "Thango, unakku Sudoku nalla set aagudhu pola 😌",
-  "Super-ah handle panra pondati! 💜",
+  "Super-ah handle panra pondati!",
+  "Indha move romba clean-ah irundhuchu 👀",
+  "Okayyy, nicee! Adha continue pannu.",
+  "Hmm not bad at all 😏",
+  "Adei, idhu nalla move!",
+  "{name}, indha move semma 🔥",
+];
+
+const STREAK_3_LINES: string[] = [
+  "Ohooo, 3 in a row ah? 👀",
+  "Ahaa, flow vandhuduchu pola 😌",
+  "Okayyy, ippo dhaan game warm up aagudhu!",
+  "Nice streak di 🔥",
+  "Chellam, rhythm correct-ah poitu irukku.",
+  "Ithu nalla start 😏",
 ];
 
 const STREAK_5_LINES: string[] = [
@@ -75,38 +105,53 @@ const STREAK_10_LINES: string[] = [
   "10 streak ah?! Enna pondati, today full power-la irukka! 🔥🔥",
   "Okayyy okayyy, un level purinjiduchu 😌",
   "Varshini officially impressed, chellam 💜",
+  "Adei 10 continuous ah?! 😳",
+  "Ippo konjam bayama irukku... nee romba nalla play panra 😂",
+  "Thango, idhu konjam over confidence level-ku pochu 👀",
+  "Okay boss, Sudoku board unakku surrender panniduchu pola 😭🔥",
+  "10 streak... seri seri, naan accept panren. Nee nalla player 😂",
 ];
 
-const MISTAKE_LINES: string[] = [
+const FIRST_MISTAKE_LINES: string[] = [
   "Oops 😅 konjam careful di.",
   "Parava illa, next move correct-ah podalaam.",
   "Aiyo 😭 adhu konjam wrong move, chellam.",
   "Chill di, game innum namma kai la dhaan.",
   "Konjam board-a observe pannitu podu.",
-  "Okay ok, deep breath... மீண்டும் try pannu 💜",
+  "Okay ok, deep breath... meendum try pannu 💜",
   "Andha number vera oru place-ku poganum polirukku.",
   "Oops pondati 😅 once re-check pannu.",
   "Parava illa thango, mistake ellarukkum varum.",
   "Chellam, konjam slow-ah paakalaam.",
   "Aiyo di 😂 board namma kitta konjam clue kekkudhu.",
   "No worries ma, next one namma correct-ah podalaam 💜",
+  "Adei 😂 konjam miss aayiduchu.",
+  "Hmm... idhu namma plan illa di 😭",
+  "It's okay chellam, next one namma paathukalaam.",
 ];
 
-const REPEAT_MISTAKE_2_LINES: string[] = [
-  "Aiyayo, தொடர்ந்து mistake ah? Konjam slow down di 😅",
-  "Ok wait, indha row full-ah re-check pannu.",
-  "Mistake count ஏறிட்டு இருக்கு... careful-ah po, chellam!",
-  "Namma oru minute break eduthutu vandhu paakalaam?",
-  "Pondati, konjam rush pannadha 😭",
+const TWO_MISTAKES_LINES: string[] = [
+  "Aiyayo, thodarnthu mistake ah? Konjam slow down di 😅",
+  "Okay wait... indha row full-ah re-check pannu.",
+  "Mistake count yerittu irukku... careful-ah po chellam!",
+  "Namma oru small break eduthutu paakalaama? 😭",
+  "Pondati, konjam rush pannadha.",
   "Thango, answer-a guess pannaama board-a observe pannu.",
   "Okay di, reset mindset... next move mattum focus pannalaam 💜",
   "Aiyoo chellam 😂 indha board unna test panradhu pola.",
   "Konjam patience pondati, namma definitely solve pannalaam.",
+  "Wait wait... konjam slow-ah po ma.",
 ];
 
-const REPEAT_MISTAKE_3_LINES: string[] = [
+const THREE_PLUS_MISTAKES_LINES: string[] = [
   "Chellam, tension edukkadha. Sudoku dhaan, namma jeyichidalaam 💜",
   "Pondati relax! Mistake aana enna, next cell focus pannalaam 😌",
+  "Okayyy stop 😂 guess panna vendam, board-a paakalaam.",
+  "Thango, konjam breathe pannu... apram try pannalaam.",
+  "Aiyo paavam 😭 indha puzzle unna romba test panradhu pola.",
+  "Chellam, namma pace-a konjam reduce pannalaam.",
+  "Nee tension aagura maari theriyudhu... chill di 💜",
+  "One step at a time pondati. Namma mudichidalaam.",
 ];
 
 const STUCK_15S_LINES: string[] = [
@@ -120,14 +165,22 @@ const STUCK_15S_LINES: string[] = [
   "Rush panna vendam pondati, nithanama paakalaam.",
   "Hmm... indha board konjam stubborn-ah irukku pola 😂",
   "Think pannitu iru di, naan inga dhaan irukken 👀",
+  "Enna yosana romba deep-ah pochu? 😂",
+  "Adei, board-a paathu ivlo serious-ah yosikkariya? 😭",
 ];
 
-const STUCK_LONG_LINES: string[] = [
-  "Thango, romba silent-ah poita 😌 oru small clue venuma?",
-  "Enna pondati, board-a paathu yosichitu irukkiya? 😌 Or hint venuma?",
+const LONG_INACTIVITY_LINES: string[] = [
+  "Thango, romba silent-ah poita 😌",
+  "Enna pondati, board-a paathu yosichitu irukkiya?",
+  "Heyy... alive ah? 😂",
+  "Chellam, naan inga wait pannitu irukken 👀",
+  "Enna di, answer unakku message anuppanumaa? 😂",
+  "Take your time ma, no rush 💜",
+  "Hmm... indha silence konjam suspicious-ah irukku 😏",
+  "Pondati, next move eppo nu naan wait panren.",
 ];
 
-const HINT_GIVEN_LINES: string[] = [
+const HINT_REQUEST_LINES: string[] = [
   "Sari, oru clue kudukren... andha cell konjam easy-ah irukku 👀",
   "Ok ok, indha number try pannu, seri-ah irukum!",
   "Hint use panradhu tholvi illa di, smart move!",
@@ -135,19 +188,32 @@ const HINT_GIVEN_LINES: string[] = [
   "Pondati, indha cell-a once consider pannu.",
   "Direct answer solla maaten 😜... but direction kudukren.",
   "Thango, idha observe pannina answer kandupidichidalaam.",
+  "Okay di, naan konjam secret clue kudukren 👀",
+  "Hint venumna kekka koodadhu nu yaar sonna? 😂",
+  "Namma rendu perum team la dhaan, so konjam help panren 💜",
 ];
 
-const NEAR_COMPLETE_LINES: string[] = [
+const PROGRESS_70_LINES: string[] = [
+  "Ohooo, nalla progress di 🔥",
+  "Half vida adhigama mudichitta!",
+  "Chellam, board ippo romba clean-ah theriyudhu 👀",
+  "Good progress pondati!",
+  "Thango, namma finish pakkathula dhaan.",
+];
+
+const NEAR_COMPLETE_90_LINES: string[] = [
   "Innum konjam dhaan! 🔥",
   "Almost there di!",
   "Final stretch! Come onnn!",
   "Idha mudichitta mass ah irukkum!",
-  "90% mudinjaachu, கடைசி push கொடு!",
+  "90% mudinjaachu, kadaisi push kudu!",
   "Chellam, finish line visible! 🏁",
   "Pondati, last few moves dhaan! 🔥",
   "Thango, almost solved! Don't lose focus 😌",
   "Ippo dhaan final boss 😂🔥",
   "Innum konjam di... Sudoku namma kai-la!",
+  "Adei, almost done! Ippo dhaan mistake panna koodadhu 😂",
+  "Chellam, concentrate... victory pakkathula irukku 👀",
 ];
 
 const VICTORY_LINES: string[] = [
@@ -164,194 +230,281 @@ const VICTORY_LINES: string[] = [
   "Awwww proud of you di 🥹💜",
   "I knew you could do it, chellam!",
   "Sudoku-ku inniku nee dhaan boss 😎🔥",
+  "Adei, semma finish diii 🔥",
+  "Chellam, unakku oru virtual hug kudukkanum pola 🥹💜",
+  "Okayyy, today I'm proud of you 😌",
+  "Nee mudichitta... naan happy 😭💜",
 ];
 
 const FAST_SOLVE_LINES: string[] = [
   "Andha speed paaru! Vera level fast! ⚡",
   "Ippadi fast-ah mudichita, unna nambave mudiyala! 😂",
   "Chellam, turbo mode on pannitiya?! 🔥",
-  "Pondati, konjam slow-ah po nu sonna... nee Sudoku-va race-a maathita 😂",
+  "Pondati, Sudoku-va race-a maathita 😂",
   "What a speed di! ⚡🔥",
   "Varshini-ku shock kuduthuta 😳",
   "Indha timing semma impressive, thango!",
+  "Adei, konjam slow-ah play pannalaam nu nenachen 😂",
+  "Enna speed idhu pondati?! 😭🔥",
+  "Okayyy speed queen 👑🔥",
+  "Ippo dhaan puriyudhu, yen nee easy mode choose pannina nu 😂",
 ];
 
-const SLOW_BUT_STEADY_LINES: string[] = [
+const SLOW_BUT_ACCURATE_LINES: string[] = [
   "Speed illa na enna, accuracy dhaan mukkiyam di 💜",
   "Slow and steady wins the Sudoku, correct-ah?",
   "Chellam, nithanama solve pannalum clean-ah mudichitta.",
   "Pondati, patience-ku result vandhuduchu 💜",
   "Accuracy semma, thango!",
   "Rush illaama perfect-ah finish pannita di.",
+  "Nalla calm-ah play panni mudichitta. Proud 😌💜",
+  "Time konjam eduthaalum result semma.",
+  "Chellam, quality over speed 😌",
 ];
 
-const DIFFICULTY_START_LINES: Record<string, { lines: string[]; mood: VarshiniMood }[]> = {
-  easy: [
-    { lines: ["Easy mode ah? Warm-up pannalaam 😄", "Chill game, relax-ah solve pannu di!", "Chellam, light-ah start pannalaam 💜", "Easy mode... but let's see how fast you finish 😏"], mood: "happy" },
-  ],
-  medium: [
-    { lines: ["Medium mode, semma balance-ah irukum 💪", "Konjam challenge irukum, ready ah?", "Okay thango, ippo konjam serious-ah play pannalaam 🔥", "Medium ah? Good choice, pondati 😌"], mood: "happy" },
-  ],
-  hard: [
-    { lines: ["Hard mode ah?! Semma confidence 🔥", "Ok ok serious mode on pannalaam!", "Chellam, ippo dhaan real game start 😏", "Hard choose pannita... naan support-la irukken di 💜", "Pondati, indha one konjam tough. But namma handle pannalaam."], mood: "excited" },
-  ],
-  extreme: [
-    { lines: ["EXTREME ah?! Nee brave dhaan di 😳", "Idhu real challenge... naan kooda konjam nervous-ah irukken 😅", "Chellam, extreme choose pannita?! Respect 🔥", "Pondati, ippo Sudoku namma rendu peraiyum test panna pogudhu 😂", "Okay thango... serious mode MAX 🔥", "Extreme-ku vandhuta... let's cook this puzzle 😎"], mood: "surprised" },
-  ],
-};
-
-const IDLE_LINES: string[] = [
-  "Naan ready, nee ready ah? 💜",
-  "Board-a nithanama paaru, answer theriyum.",
-  "Take your time di, no rush.",
-  "Varshini idha ippove watch panra 👀",
-  "Enna pondati, board-a paathu yosichitu irukkiya? 😌",
-  "Chellam, whenever you're ready 💜",
-  "Thango, naan inga dhaan irukken.",
-  "Next move enna nu paakalaam 👀",
-  "Hmm... suspense build panriya di? 😂",
+const EASY_START_LINES: string[] = [
+  "Easy mode ah? Warm-up pannalaam 😄",
+  "Chill game, relax-ah solve pannu di!",
+  "Chellam, light-ah start pannalaam 💜",
+  "Easy mode... but let's see how fast you finish 😏",
+  "Okay di, first game smooth-ah pogattum.",
+  "Easy ah start pannitu later hard-ku polama? 👀",
 ];
 
-const PLAYER_RETURN_LINES: string[] = [
-  "Ahaa thirumbi vandhutiya di! 😌",
-  "Welcome back, chellam 💜",
-  "Pondati back to action! 🔥",
-  "Enga poita? Naan inga wait pannitu irundhen 😂",
-  "Okay thango, let's continue!",
-  "Ready ah? Namma Sudoku innum finish aagala 👀",
+const MEDIUM_START_LINES: string[] = [
+  "Medium mode, semma balance-ah irukum 💪",
+  "Konjam challenge irukum, ready ah?",
+  "Okay thango, ippo konjam serious-ah play pannalaam 🔥",
+  "Medium ah? Good choice, pondati 😌",
+  "Idhu comfortable-ah irukkum... but paakalaam 😏",
+  "Okayyy, konjam brain work pannalaam 😂",
+];
+
+const HARD_START_LINES: string[] = [
+  "Hard mode ah?! Semma confidence 🔥",
+  "Ok ok serious mode on pannalaam!",
+  "Chellam, ippo dhaan real game start 😏",
+  "Pondati, indha one konjam tough. But namma handle pannalaam.",
+  "Thango, easy venam nu decide pannita pola 😂",
+  "Okay boss, let's see what you've got 🔥",
+];
+
+const EXTREME_START_LINES: string[] = [
+  "EXTREME ah?! Nee brave dhaan di 😳",
+  "Idhu real challenge... naan kooda konjam nervous-ah irukken 😅",
+  "Chellam, extreme choose pannita?! Respect 🔥",
+  "Pondati, ippo Sudoku namma rendu peraiyum test panna pogudhu 😂",
+  "Okay thango... serious mode MAX 🔥",
+  "Extreme-ku vandhuta... let's cook this puzzle 😎",
+  "Adei, unakku bayame illa pola 😭🔥",
+  "Okay di, ippo naan full support mode-la irukken 💜",
 ];
 
 const SPECTATOR_JOIN_LINES: string[] = [
   "Ahaa, audience vandhutaanga di 👀",
   "Pondati, ippo someone is watching you! Don't get nervous 😂",
   "Chellam, live audience vandhuduchu 🔥",
-  "Okayyy, ippo performance kudukkanum pola 😏",
-  "Thango, pressure edukkadha... just play naturally 💜",
-];
-
-const SPECTATOR_COUNT_INC_LINES: string[] = [
   "Wahhh audience increase aagudhu 👀",
-  "Pondati, un game-ku fans vandhutaanga pola 😂🔥",
-  "Chellam, ippo full live show ah pochu!",
+  "Enna di, ippo live performance ah? 😂",
+  "Thango, ippo konjam pressure irukkum pola 😏",
+  "Adei, fans vandhutaanga pola 😂🔥",
+  "Okayyy, audience irukku... show them what you got 😎",
 ];
 
-// Memory map per category to prevent consecutive duplicates
-const lastShown = new Map<string, string>();
+const PLAYFUL_TEASING_LINES: string[] = [
+  "Adei, idhuvum yosikka vendiya move ah? 😂",
+  "Enna di, romba scene podra 😂",
+  "Chellam, board-a confuse panriya illa nee confuse aayitiya? 😭",
+  "Thango, konjam over confidence pola 😏",
+  "Okayyy boss, naan paathutu irukken 👀",
+  "Hmm... indha move pathi enakku konjam doubt dhaan 😂",
+  "Pondati, guess panna try pannadha nu sonnen la 😭",
+  "Adei, naan watch panren nu marandhutiya? 😂",
+  "Okay okay, naan edhuvum sollala... 👀😂",
+];
 
-function pickUnique(category: string, arr: string[]): string {
-  const last = lastShown.get(category);
-  const pool = last && arr.length > 1 ? arr.filter((v) => v !== last) : arr;
-  const picked = pool[Math.floor(Math.random() * pool.length)];
-  lastShown.set(category, picked);
-  return picked;
+const CARING_MOMENTS_LINES: string[] = [
+  "Chellam, tension edukkadha 💜",
+  "It's okay di, namma slowly pannalaam.",
+  "Thango, rush panna vendam. Take your time.",
+  "Pondati, oru deep breath... apram continue pannalaam 💜",
+  "Mistake aaguradhu normal dhaan di.",
+  "Namma game enjoy panna dhaan, pressure eduthukaadha 😌",
+  "Chellam, nee mudichiduva. Just chill 💜",
+];
+
+const EXTRA_CUTE_LINES: string[] = [
+  "Aww chellam 🥹💜",
+  "Hehe, proud of you 😌",
+  "En pondati nalla play panra 😂💜",
+  "Thango, indha move-ku oru heart kudukkanum ❤️",
+  "Aww, semma cute-ah solve panra 😭",
+  "Okayyy, today you're making me proud 😌💜",
+  "Chellam, you're actually good at this 👀",
+  "Hehe, naan sonnen la nee pannuva nu 💜",
+];
+
+// -------------------------------------------------------------------
+// MEMORY TRACKER FOR REPETITION PREVENTION (Rule 28)
+// Stores last 8 lines globally to prevent repeats
+// -------------------------------------------------------------------
+const recentLinesHistory: string[] = [];
+const HISTORY_LIMIT = 8;
+
+function pickUniqueLine(pool: string[], playerName?: string): string {
+  const available = pool.filter((line) => !recentLinesHistory.includes(line));
+  const candidatePool = available.length > 0 ? available : pool;
+  let chosen = candidatePool[Math.floor(Math.random() * candidatePool.length)];
+
+  if (playerName) {
+    chosen = chosen.replace("{name}", playerName);
+  } else {
+    chosen = chosen.replace("{name}", "thango");
+  }
+
+  recentLinesHistory.push(chosen);
+  if (recentLinesHistory.length > HISTORY_LIMIT) {
+    recentLinesHistory.shift();
+  }
+  return chosen;
 }
 
 export function resetVarshiniMemory() {
-  lastShown.clear();
+  recentLinesHistory.length = 0;
 }
 
-export function reactToMove(ctx: MoveContext): VarshiniLine {
+// -------------------------------------------------------------------
+// CONTEXTUAL REACTION ENGINE
+// -------------------------------------------------------------------
+
+let moveCounter = 0;
+
+export function reactToMove(ctx: MoveContext): VarshiniLine | null {
+  moveCounter += 1;
+
+  // On incorrect move, ALWAYS react
   if (!ctx.correct) {
     if (ctx.mistakes >= 3) {
-      return { text: pickUnique("repeatMistake3", REPEAT_MISTAKE_3_LINES), mood: "worried" };
+      return { text: pickUniqueLine(THREE_PLUS_MISTAKES_LINES, ctx.playerName), mood: "caring" };
     }
     if (ctx.mistakes >= 2) {
-      return { text: pickUnique("repeatMistake2", REPEAT_MISTAKE_2_LINES), mood: "worried" };
+      return { text: pickUniqueLine(TWO_MISTAKES_LINES, ctx.playerName), mood: "worried" };
     }
-    return { text: pickUnique("mistake", MISTAKE_LINES), mood: "worried" };
+    return { text: pickUniqueLine(FIRST_MISTAKE_LINES, ctx.playerName), mood: "worried" };
   }
 
+  // 10+ streak milestone
   if (ctx.currentStreak >= 10 && ctx.currentStreak % 5 === 0) {
-    return { text: pickUnique("streak10", STREAK_10_LINES), mood: "excited" };
+    return { text: pickUniqueLine(STREAK_10_LINES, ctx.playerName), mood: "shocked" };
   }
 
-  if (ctx.currentStreak >= 5 && ctx.currentStreak % 5 === 0) {
-    return { text: pickUnique("streak5", STREAK_5_LINES), mood: "surprised" };
+  // 5 move streak milestone
+  if (ctx.currentStreak === 5) {
+    return { text: pickUniqueLine(STREAK_5_LINES, ctx.playerName), mood: "excited" };
   }
 
+  // 3 move streak milestone
+  if (ctx.currentStreak === 3) {
+    return { text: pickUniqueLine(STREAK_3_LINES, ctx.playerName), mood: "playful" };
+  }
+
+  // Unit completed milestone
   if (ctx.unitCompleted) {
-    const nick = getRandomNickname();
-    return {
-      text: `Indha part konjam tricky... but nee semma-ah handle pannita, ${nick}! 🔥`,
-      mood: "excited",
-    };
+    return { text: pickUniqueLine(EXTRA_CUTE_LINES, ctx.playerName), mood: "proud" };
   }
 
-  if (ctx.progressPercent >= 90) {
-    return { text: pickUnique("near", NEAR_COMPLETE_LINES), mood: "excited" };
+  // Progress milestones
+  if (ctx.progressPercent >= 90 && Math.random() < 0.5) {
+    return { text: pickUniqueLine(NEAR_COMPLETE_90_LINES, ctx.playerName), mood: "excited" };
   }
 
-  // Inject player name randomly in 20% of correct moves if name exists
-  if (ctx.playerName && Math.random() < 0.2) {
-    return {
-      text: `${ctx.playerName}, indha move semma! 🔥`,
-      mood: "happy",
-    };
+  if (ctx.progressPercent >= 70 && Math.random() < 0.3) {
+    return { text: pickUniqueLine(PROGRESS_70_LINES, ctx.playerName), mood: "happy" };
   }
 
-  return { text: pickUnique("correct", CORRECT_MOVE_LINES), mood: "happy" };
+  // Intelligent Frequency (Rule 29): Only speak on ~50% of routine correct moves
+  if (moveCounter % 2 === 0) {
+    // 10% chance of playful tease on routine moves
+    if (Math.random() < 0.1) {
+      return { text: pickUniqueLine(PLAYFUL_TEASING_LINES, ctx.playerName), mood: "playful" };
+    }
+    return { text: pickUniqueLine(CORRECT_MOVE_LINES, ctx.playerName), mood: "happy" };
+  }
+
+  return null;
 }
 
 export function reactToStuck(isLong = false): VarshiniLine {
   if (isLong) {
-    return { text: pickUnique("stuckLong", STUCK_LONG_LINES), mood: "thinking" };
+    return { text: pickUniqueLine(LONG_INACTIVITY_LINES), mood: "thinking" };
   }
-  return { text: pickUnique("stuck", STUCK_15S_LINES), mood: "thinking" };
+  return { text: pickUniqueLine(STUCK_15S_LINES), mood: "thinking" };
 }
 
 export function reactToHint(): VarshiniLine {
-  return { text: pickUnique("hint", HINT_GIVEN_LINES), mood: "thinking" };
+  return { text: pickUniqueLine(HINT_REQUEST_LINES), mood: "thinking" };
 }
 
 export function reactToIdle(): VarshiniLine {
-  return { text: pickUnique("idle", IDLE_LINES), mood: "idle" };
-}
-
-export function reactToPlayerReturn(): VarshiniLine {
-  return { text: pickUnique("playerReturn", PLAYER_RETURN_LINES), mood: "playful" };
+  return { text: pickUniqueLine(LONG_INACTIVITY_LINES), mood: "idle" };
 }
 
 export function reactToSpectatorJoin(count: number): VarshiniLine {
-  if (count > 1) {
-    return { text: pickUnique("spectatorInc", SPECTATOR_COUNT_INC_LINES), mood: "playful" };
+  if (count >= 10) {
+    return { text: "Pondatiii, 10+ audience ah?! Ippo nee celebrity 😂🔥", mood: "excited" };
   }
-  return { text: pickUnique("spectatorJoin", SPECTATOR_JOIN_LINES), mood: "playful" };
+  if (count >= 5) {
+    return { text: "Adei 5 people watching ah?! 🔥", mood: "excited" };
+  }
+  if (count >= 2) {
+    return { text: "Ohooo, rendu per already watching 👀", mood: "playful" };
+  }
+  return { text: pickUniqueLine(SPECTATOR_JOIN_LINES), mood: "playful" };
 }
 
 export function reactToStart(difficulty: string): VarshiniLine {
-  const config = DIFFICULTY_START_LINES[difficulty] ?? DIFFICULTY_START_LINES.medium;
-  const pickedConfig = config[Math.floor(Math.random() * config.length)];
-  return { text: pickUnique(`start_${difficulty}`, pickedConfig.lines), mood: pickedConfig.mood };
+  switch (difficulty) {
+    case "easy":
+      return { text: pickUniqueLine(EASY_START_LINES), mood: "happy" };
+    case "medium":
+      return { text: pickUniqueLine(MEDIUM_START_LINES), mood: "happy" };
+    case "hard":
+      return { text: pickUniqueLine(HARD_START_LINES), mood: "excited" };
+    case "extreme":
+      return { text: pickUniqueLine(EXTREME_START_LINES), mood: "shocked" };
+    default:
+      return { text: pickUniqueLine(MEDIUM_START_LINES), mood: "happy" };
+  }
 }
 
 export function reactToVictory(elapsedSeconds: number, difficulty: string): VarshiniLine {
-  const base = pickUnique("victory", VICTORY_LINES);
+  const base = pickUniqueLine(VICTORY_LINES);
   const fastThreshold = difficulty === "extreme" ? 900 : difficulty === "hard" ? 600 : 300;
   if (elapsedSeconds <= fastThreshold) {
-    return { text: `${base} ${pickUnique("fastSolve", FAST_SOLVE_LINES)}`, mood: "surprised" };
+    return { text: `${base} ${pickUniqueLine(FAST_SOLVE_LINES)}`, mood: "celebrating" };
   }
-  return { text: `${base} ${pickUnique("slowSteady", SLOW_BUT_STEADY_LINES)}`, mood: "proud" };
+  return { text: `${base} ${pickUniqueLine(SLOW_BUT_ACCURATE_LINES)}`, mood: "proud" };
 }
 
-export function greetingForRoom(playerName: string): VarshiniLine {
-  const variants = [
-    `Vaanga ${playerName}! Naan Varshini, unga Sudoku companion 💜 Start pannalaama?`,
-    `Heyy ${playerName}! 👋 Naan Varshini 💜 Ready ah, chellam?`,
-    `Hi ${playerName}! 😌 Sudoku play pannalaama di?`,
-    `Welcome back, ${playerName}! Varshini ready 💜`,
-    `Heyyy ${playerName}! Innaiku oru Sudoku victory namma pocket-la podalaama? 😏🔥`,
-  ];
-  return {
-    text: pickUnique("greeting", variants),
-    mood: "happy",
-  };
+export function greetingForRoom(playerName: string, isReturning = false): VarshiniLine {
+  if (isReturning) {
+    return { text: pickUniqueLine(GREETING_RETURNING_PLAYER, playerName), mood: "happy" };
+  }
+  return { text: pickUniqueLine(GREETING_NEW_PLAYER, playerName), mood: "happy" };
 }
 
-export function spectatorCommentary(playerName: string, roomStatus: string, action?: string, moveResult?: { correct: boolean }, streak?: number, progressPercent?: number): VarshiniLine {
+export function spectatorCommentary(
+  playerName: string,
+  roomStatus: string,
+  actionType?: string,
+  moveResult?: { correct: boolean },
+  streak?: number,
+  progressPercent?: number
+): VarshiniLine {
   if (roomStatus === "completed") {
-    return { text: `YASSS! ${playerName} solved it! 🏆🔥 Semma solve!`, mood: "proud" };
+    return { text: `YASSS! ${playerName} solved it! 🏆🔥 Semma solve!`, mood: "celebrating" };
   }
-  if (action === "place") {
+  if (actionType === "place") {
     if (moveResult?.correct) {
       if (streak && streak >= 10) {
         return { text: `10 streak by ${playerName}! Semma form! 🔥🔥`, mood: "excited" };
@@ -359,9 +512,9 @@ export function spectatorCommentary(playerName: string, roomStatus: string, acti
       if (streak && streak >= 5) {
         return { text: `5 correct moves continuous by ${playerName}! 🔥`, mood: "excited" };
       }
-      return { text: `Wow, ${playerName} nalla move pannitaanga 🔥`, mood: "happy" };
+      return { text: `${playerName} nalla move pannitaanga 🔥`, mood: "happy" };
     } else {
-      return { text: `Aiyo 😅 konjam mistake by ${playerName}... let's see next move.`, mood: "worried" };
+      return { text: `Oops 😅 ${playerName} konjam miss pannitaanga.`, mood: "worried" };
     }
   }
   if (progressPercent && progressPercent >= 90) {
