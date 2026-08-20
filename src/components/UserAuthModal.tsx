@@ -6,6 +6,8 @@ import {
   getStoredUser,
   setStoredUser,
   clearStoredUser,
+  clearActiveRoomCode,
+  clearRecentGames,
   type UserSession,
 } from "@/lib/client-storage";
 
@@ -113,6 +115,26 @@ export function UserAuthModal({
     }
   }
 
+  async function handleClearHistory() {
+    if (!confirm("Are you sure you want to delete all your game history?")) return;
+    try {
+      await fetch("/api/user/clear-history", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userToken: user?.token,
+          playerName: user?.displayName,
+        }),
+      });
+      setHistory([]);
+      setActiveRoomCode(null);
+      clearActiveRoomCode();
+      clearRecentGames();
+    } catch {
+      /* ignore */
+    }
+  }
+
   function handleLogout() {
     clearStoredUser();
     setUser(null);
@@ -172,9 +194,19 @@ export function UserAuthModal({
               )}
 
               <div className="mt-6">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Game History ({history.length})
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Game History ({history.length})
+                  </h3>
+                  {history.length > 0 && (
+                    <button
+                      onClick={handleClearHistory}
+                      className="text-[0.7rem] text-rose-400 hover:text-rose-300 underline"
+                    >
+                      🗑 Delete All History
+                    </button>
+                  )}
+                </div>
                 {history.length === 0 ? (
                   <p className="mt-2 text-xs text-slate-500">No games recorded yet. Start solving!</p>
                 ) : (

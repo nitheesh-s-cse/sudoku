@@ -88,6 +88,10 @@ export function addRecentGame(game: RecentGame) {
   safeSet(KEYS.recentGames, JSON.stringify(games.slice(0, 8)));
 }
 
+export function clearRecentGames() {
+  safeRemove(KEYS.recentGames);
+}
+
 export function getBestTime(difficulty: string): number | null {
   const raw = safeGet(KEYS.bestTimes);
   if (!raw) return null;
