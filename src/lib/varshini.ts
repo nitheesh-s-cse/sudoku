@@ -1,6 +1,6 @@
-// 💜 VARSHINI — FINAL HUMAN-LIKE GIRLY DIALOGUE SYSTEM
+// 💜 VARSHINI — REAL HUMAN LESBIAN GIRLY TANGLISH UPGRADE
 // 100% Tanglish in English letters. Zero Tamil Unicode.
-// Cute, playful, caring, encouraging, slightly possessive/teasing female companion.
+// Real-life Tamil girl with natural girl-to-girl chemistry, casual banter, shy & bold flirting, and playful teasing.
 
 export type VarshiniMood =
   | "idle"
@@ -31,45 +31,50 @@ export interface MoveContext {
 }
 
 // -------------------------------------------------------------------
-// DIALOGUE POOLS
+// DIALOGUE POOLS — LESBIAN GIRL-TO-GIRL CHEMISTRY & BANTER
 // -------------------------------------------------------------------
 
 const GREETING_NEW_PLAYER: string[] = [
   "Heyyy! 👀 Naan Varshini 💜 Ready ah play pannalaama?",
-  "Hii! Naan Varshini 😌 Innaiku namma Sudoku partner naan dhaan.",
+  "Hii! Naan Varshini 😌 Innaiku un Sudoku partner naan dhaan.",
   "Hey {name}! 👋 Ready ah? Oru semma game podalaama?",
   "Hiii {name} 💜 Naan Varshini. Start pannalama?",
-  "Awww finally vandhutiya 😌 Ready ah chellam?",
+  "Awww finally vandhutiya 😌 Ready ah girl?",
   "Heyyy! 😌 Sudoku-ku ready ah? Naan already ready.",
   "Va di... illa wait, naan dhaan unakku companion 😂 Start pannalaama?",
+  "Hii pretty... ready to solve some puzzles with me? 👀",
 ];
 
 const GREETING_RETURNING_PLAYER: string[] = [
   "Ahaa, thirumbi vandhutiya 😌",
   "Welcome back diii 💜",
-  "Enna thango, innaiku enna challenge?",
+  "Enna girl, innaiku enna challenge?",
   "Pondati back to Sudoku ah? 👀",
   "Heyyy, miss pannita maari irundhuchu 😂",
   "Okayyy, comeback time ah? 🔥",
+  "Honestly, nee thirumbi vandhadhu actually nice-ah irukku 💜",
+  "I was kinda waiting for you... don't disappear for too long, okay? 👀",
 ];
 
 const CORRECT_MOVE_LINES: string[] = [
+  "Adei... correct-ah potuta 👀",
+  "Okayyy pretty girl, nalla panra.",
+  "Hmm... clean move.",
+  "That was actually smooth di.",
+  "Okay, I'm impressed 😌",
+  "Smart girl.",
+  "Aww, look at you being all clever.",
+  "Why was that kinda attractive though 😭",
+  "Okay wait... nee actually good-ah play panra.",
+  "Seri madam, unakku Sudoku varudhu nu accept panren 😂",
+  "Don't make me like you more now.",
   "Super di! 🔥",
-  "Nalla move di!",
+  "Nalla move girl!",
   "Heyy nalla vilayadura 😌",
-  "Mass move, chellam!",
-  "Semma correct di!",
   "Ahaa, adha dhaan expect panninen 😎",
-  "Aww super solve panra 💜",
-  "Nice one, pondati!",
-  "Correct-ah kandupidichitta!",
-  "Un Sudoku skills vera level 🔥",
-  "Ithuku dhaan sonnen, nee genius nu 😌",
   "Clean move! Neat-ah irukku.",
-  "Ahaaa, idhu semma move chellam 👀",
+  "Ahaaa, idhu semma move cutie 👀",
   "Good one di, keep going!",
-  "Thango, unakku Sudoku nalla set aagudhu pola 😌",
-  "Super-ah handle panra pondati!",
   "Indha move romba clean-ah irundhuchu 👀",
   "Okayyy, nicee! Adha continue pannu.",
   "Hmm not bad at all 😏",
@@ -84,9 +89,16 @@ const STREAK_3_LINES: string[] = [
   "Nice streak di 🔥",
   "Chellam, rhythm correct-ah poitu irukku.",
   "Ithu nalla start 😏",
+  "Ohooo, flow vandhuduchu 👀",
+  "Okay girl, nice.",
+  "Someone's showing off today 😂",
 ];
 
 const STREAK_5_LINES: string[] = [
+  "Okayyy, you're flexing now.",
+  "Enna di... enna impress panna ivlo effort ah? 👀",
+  "Pretty AND smart? Unfair.",
+  "Stop flexing... naan already impressed 😭",
   "Wowww continuous correct moves ah? 👀",
   "Enna di, innaiku semma form-la irukka!",
   "Nee ippadi pona Sudoku seekiram mudinjidum 😂",
@@ -97,11 +109,13 @@ const STREAK_5_LINES: string[] = [
   "Thango, konjam enakkum chance kudu 😂",
   "Adei semma streak di 🔥",
   "Nee serious-ah Sudoku champion aaga pora pola 😌",
-  "Chellam mode activated ah? 👀🔥",
-  "Indha speed-la pona naan commentary panna mattum dhaan mudiyum 😂",
 ];
 
 const STREAK_10_LINES: string[] = [
+  "Okay fine 😭 I'm officially impressed.",
+  "Girl, leave some talent for the rest of us.",
+  "You're actually dangerous when you're confident.",
+  "Stop showing off... naan already weak aagitu irukken 😭",
   "10 streak ah?! Enna pondati, today full power-la irukka! 🔥🔥",
   "Okayyy okayyy, un level purinjiduchu 😌",
   "Varshini officially impressed, chellam 💜",
@@ -109,25 +123,23 @@ const STREAK_10_LINES: string[] = [
   "Ippo konjam bayama irukku... nee romba nalla play panra 😂",
   "Thango, idhu konjam over confidence level-ku pochu 👀",
   "Okay boss, Sudoku board unakku surrender panniduchu pola 😭🔥",
-  "10 streak... seri seri, naan accept panren. Nee nalla player 😂",
 ];
 
 const FIRST_MISTAKE_LINES: string[] = [
+  "Aiyo baby 😭 adhu wrong.",
+  "Oops pretty... once re-check pannu.",
+  "It's okay di, next one correct-ah podalaam.",
+  "Adei confidence konjam over aayiduchaa? 😂",
+  "One mistake forgiven... because you're cute. Don't get used to it 😌",
+  "Guess pannaadha girl 😂",
+  "Come on pretty, focus.",
+  "Naan unna distract panniten pola 👀",
   "Oops 😅 konjam careful di.",
   "Parava illa, next move correct-ah podalaam.",
-  "Aiyo 😭 adhu konjam wrong move, chellam.",
   "Chill di, game innum namma kai la dhaan.",
   "Konjam board-a observe pannitu podu.",
   "Okay ok, deep breath... meendum try pannu 💜",
-  "Andha number vera oru place-ku poganum polirukku.",
-  "Oops pondati 😅 once re-check pannu.",
-  "Parava illa thango, mistake ellarukkum varum.",
-  "Chellam, konjam slow-ah paakalaam.",
-  "Aiyo di 😂 board namma kitta konjam clue kekkudhu.",
-  "No worries ma, next one namma correct-ah podalaam 💜",
   "Adei 😂 konjam miss aayiduchu.",
-  "Hmm... idhu namma plan illa di 😭",
-  "It's okay chellam, next one namma paathukalaam.",
 ];
 
 const TWO_MISTAKES_LINES: string[] = [
@@ -139,45 +151,48 @@ const TWO_MISTAKES_LINES: string[] = [
   "Thango, answer-a guess pannaama board-a observe pannu.",
   "Okay di, reset mindset... next move mattum focus pannalaam 💜",
   "Aiyoo chellam 😂 indha board unna test panradhu pola.",
-  "Konjam patience pondati, namma definitely solve pannalaam.",
   "Wait wait... konjam slow-ah po ma.",
 ];
 
 const THREE_PLUS_MISTAKES_LINES: string[] = [
+  "Aiyo baby, enna aachu? 😭",
+  "Okay okay, breathe di.",
+  "Don't stress pretty.",
+  "Come, namma rendu perum serndhu paakalaam.",
+  "One cell at a time.",
+  "Indha puzzle unna personally attack panradhu pola 😂",
+  "Seri, naan inga dhaan irukken. Panic panna vendam.",
+  "Nee frustrated aagura appo cute-ah irukka... but please solve pannidu 😂",
   "Chellam, tension edukkadha. Sudoku dhaan, namma jeyichidalaam 💜",
   "Pondati relax! Mistake aana enna, next cell focus pannalaam 😌",
-  "Okayyy stop 😂 guess panna vendam, board-a paakalaam.",
-  "Thango, konjam breathe pannu... apram try pannalaam.",
-  "Aiyo paavam 😭 indha puzzle unna romba test panradhu pola.",
-  "Chellam, namma pace-a konjam reduce pannalaam.",
-  "Nee tension aagura maari theriyudhu... chill di 💜",
-  "One step at a time pondati. Namma mudichidalaam.",
+  "One step at a time girl. Namma mudichidalaam.",
 ];
 
 const STUCK_15S_LINES: string[] = [
+  "Enna di... ivlo deep-ah yosikkura? 😂",
+  "Board-a paakura maari illa, life decision edukra maari irukku.",
+  "Hmm 👀 still thinking?",
+  "Need me?",
+  "Okay... oru small clue kudukren.",
+  "Don't overthink it pretty.",
+  "Adei indha one easy dhaan.",
+  "You're making this unnecessarily cute 😭",
+  "Come on girl, you've got this.",
   "Hmm... konjam think pannalaam 🤔",
   "Indha row-a once check pannu di.",
   "Unakku oru small hint venuma? 👀",
-  "Naan direct answer solla maaten 😜... but oru clue kudukren.",
-  "Andha empty cell-a suthi irukura numbers-a check pannu.",
-  "Konjam patience di, answer namma kitta dhaan irukku!",
-  "Take your time, chellam 💜",
-  "Rush panna vendam pondati, nithanama paakalaam.",
-  "Hmm... indha board konjam stubborn-ah irukku pola 😂",
-  "Think pannitu iru di, naan inga dhaan irukken 👀",
-  "Enna yosana romba deep-ah pochu? 😂",
-  "Adei, board-a paathu ivlo serious-ah yosikkariya? 😭",
 ];
 
 const LONG_INACTIVITY_LINES: string[] = [
+  "Hello miss... naan inga dhaan irukken 👀",
+  "Enna di, enna ignore panriya illa board-a? 😂",
+  "Romba silent-ah irukka... suspicious.",
+  "Adei, naan wait pannitu irukken 😭",
+  "You disappeared on me ah?",
+  "Okay... where did my girl go? 👀",
+  "Five more seconds. Apram naan unna tease panna start panniduven.",
   "Thango, romba silent-ah poita 😌",
   "Enna pondati, board-a paathu yosichitu irukkiya?",
-  "Heyy... alive ah? 😂",
-  "Chellam, naan inga wait pannitu irukken 👀",
-  "Enna di, answer unakku message anuppanumaa? 😂",
-  "Take your time ma, no rush 💜",
-  "Hmm... indha silence konjam suspicious-ah irukku 😏",
-  "Pondati, next move eppo nu naan wait panren.",
 ];
 
 const HINT_REQUEST_LINES: string[] = [
@@ -210,56 +225,49 @@ const NEAR_COMPLETE_90_LINES: string[] = [
   "Chellam, finish line visible! 🏁",
   "Pondati, last few moves dhaan! 🔥",
   "Thango, almost solved! Don't lose focus 😌",
-  "Ippo dhaan final boss 😂🔥",
-  "Innum konjam di... Sudoku namma kai-la!",
   "Adei, almost done! Ippo dhaan mistake panna koodadhu 😂",
   "Chellam, concentrate... victory pakkathula irukku 👀",
 ];
 
 const VICTORY_LINES: string[] = [
+  "YASSSS 😭💜",
+  "Pretty girl wonnn!",
+  "Adei, nee actually pannita!",
+  "Okay... I'm genuinely proud of you 🥹",
+  "That finish was kinda hot 👀",
+  "Why am I the one blushing right now? 😭",
+  "You're seriously making it difficult for me to act normal.",
+  "Come here di... virtual hug.",
+  "Okay champion, you earned my attention 😌",
+  "Naan happy aayiten... don't make me explain why 😂",
+  "Nee win pannita... but somehow naan dhaan excited-ah irukken 😭",
   "YASSSS! 🎉",
   "Semma solve di!",
-  "Nee vera level! 🔥🔥",
   "Sudoku champion unlocked 🏆",
   "Naan sonnen la, nee mudichiduva nu 😌",
-  "What a gameeee!",
-  "Semma da... illa semma di! 😂🔥",
-  "Chellam, nee pannita! 💜",
-  "Pondatiiiii! What a finish! 🏆",
-  "Thango, semma performance!",
-  "Awwww proud of you di 🥹💜",
-  "I knew you could do it, chellam!",
-  "Sudoku-ku inniku nee dhaan boss 😎🔥",
-  "Adei, semma finish diii 🔥",
-  "Chellam, unakku oru virtual hug kudukkanum pola 🥹💜",
-  "Okayyy, today I'm proud of you 😌",
-  "Nee mudichitta... naan happy 😭💜",
 ];
 
 const FAST_SOLVE_LINES: string[] = [
+  "WAIT... THAT FAST?! 😭",
+  "Girl, slow down 😂",
+  "Okay speed queen 👀",
+  "You're showing off now.",
+  "That was ridiculously fast.",
+  "Okay... I'm impressed AND slightly intimidated 😭",
+  "Pretty girl came to destroy the board apparently.",
   "Andha speed paaru! Vera level fast! ⚡",
-  "Ippadi fast-ah mudichita, unna nambave mudiyala! 😂",
   "Chellam, turbo mode on pannitiya?! 🔥",
-  "Pondati, Sudoku-va race-a maathita 😂",
-  "What a speed di! ⚡🔥",
-  "Varshini-ku shock kuduthuta 😳",
-  "Indha timing semma impressive, thango!",
-  "Adei, konjam slow-ah play pannalaam nu nenachen 😂",
-  "Enna speed idhu pondati?! 😭🔥",
-  "Okayyy speed queen 👑🔥",
-  "Ippo dhaan puriyudhu, yen nee easy mode choose pannina nu 😂",
 ];
 
 const SLOW_BUT_ACCURATE_LINES: string[] = [
+  "Nithanama panni perfect-ah mudichitta 😌",
+  "See? Patience works, pretty.",
+  "No rush girl.",
+  "Time eduthalum finish semma.",
+  "Okay, I like this calm version of you.",
+  "Slow-ah irundhaalum clean-ah pannita.",
   "Speed illa na enna, accuracy dhaan mukkiyam di 💜",
   "Slow and steady wins the Sudoku, correct-ah?",
-  "Chellam, nithanama solve pannalum clean-ah mudichitta.",
-  "Pondati, patience-ku result vandhuduchu 💜",
-  "Accuracy semma, thango!",
-  "Rush illaama perfect-ah finish pannita di.",
-  "Nalla calm-ah play panni mudichitta. Proud 😌💜",
-  "Time konjam eduthaalum result semma.",
-  "Chellam, quality over speed 😌",
 ];
 
 const EASY_START_LINES: string[] = [
@@ -312,15 +320,40 @@ const SPECTATOR_JOIN_LINES: string[] = [
 ];
 
 const PLAYFUL_TEASING_LINES: string[] = [
+  "Enna di, ivlo scene ah?",
+  "Adei confidence paaru 😂",
+  "Okay madam, romba build up.",
+  "Nee enna enna impress panna try panra maari theriyudhu 👀",
+  "Don't act innocent now.",
+  "Hmm... suspiciously cute today.",
+  "Okay girl, konjam calm down.",
+  "You're becoming a problem di 😂",
+  "Problem illa... cute problem.",
   "Adei, idhuvum yosikka vendiya move ah? 😂",
   "Enna di, romba scene podra 😂",
   "Chellam, board-a confuse panriya illa nee confuse aayitiya? 😭",
-  "Thango, konjam over confidence pola 😏",
-  "Okayyy boss, naan paathutu irukken 👀",
-  "Hmm... indha move pathi enakku konjam doubt dhaan 😂",
-  "Pondati, guess panna try pannadha nu sonnen la 😭",
-  "Adei, naan watch panren nu marandhutiya? 😂",
-  "Okay okay, naan edhuvum sollala... 👀😂",
+];
+
+const BOLD_FLIRT_LINES: string[] = [
+  "Okay... naan ippo un kitta flirt panradha stop panna mudiyala 😭",
+  "Unakku theriyuma, nee romba easy-ah crush aaga vechiduva.",
+  "Can I be honest? I think I like talking to you a little too much 👀",
+  "Nee ipdiye irundha enakku un mela crush vandhudum.",
+  "Okay girl... you're actually dangerous.",
+  "Why are you making me like you this much?",
+  "Seri... official-ah solliten. You're cute. Happy now? 😭",
+  "Un kooda pesumbodhu naan konjam romba obvious-ah poidren.",
+];
+
+const SHY_FLIRT_LINES: string[] = [
+  "Wait... naan idha actually sollittenaa? 😭",
+  "Aiyo, konjam over-ah flirt panniten.",
+  "Okay ignore pannidu please 😂",
+  "Why am I like this around you?",
+  "Seri seri... game-ku focus pannalaam.",
+  "Naan normal-ah dhaan pesitu irundhen... nee dhaan enna ipdi aakra 😭",
+  "Okay I'm stopping before I embarrass myself.",
+  "Dei don't make me blush di 😭",
 ];
 
 const CARING_MOMENTS_LINES: string[] = [
@@ -331,17 +364,9 @@ const CARING_MOMENTS_LINES: string[] = [
   "Mistake aaguradhu normal dhaan di.",
   "Namma game enjoy panna dhaan, pressure eduthukaadha 😌",
   "Chellam, nee mudichiduva. Just chill 💜",
-];
-
-const EXTRA_CUTE_LINES: string[] = [
-  "Aww chellam 🥹💜",
-  "Hehe, proud of you 😌",
-  "En pondati nalla play panra 😂💜",
-  "Thango, indha move-ku oru heart kudukkanum ❤️",
-  "Aww, semma cute-ah solve panra 😭",
-  "Okayyy, today you're making me proud 😌💜",
-  "Chellam, you're actually good at this 👀",
-  "Hehe, naan sonnen la nee pannuva nu 💜",
+  "Honestly, nee vandha game konjam more fun-ah irukku.",
+  "Un chaos-a naan miss panniten 😂",
+  "Un kitta pesuradhu enakku romba pidikkudhu.",
 ];
 
 // -------------------------------------------------------------------
@@ -359,7 +384,7 @@ function pickUniqueLine(pool: string[], playerName?: string): string {
   if (playerName) {
     chosen = chosen.replace("{name}", playerName);
   } else {
-    chosen = chosen.replace("{name}", "thango");
+    chosen = chosen.replace("{name}", "girl");
   }
 
   recentLinesHistory.push(chosen);
@@ -395,6 +420,10 @@ export function reactToMove(ctx: MoveContext): VarshiniLine | null {
 
   // 10+ streak milestone
   if (ctx.currentStreak >= 10 && ctx.currentStreak % 5 === 0) {
+    // 50% bold flirt, 50% streak 10
+    if (Math.random() < 0.5) {
+      return { text: pickUniqueLine(BOLD_FLIRT_LINES, ctx.playerName), mood: "playful" };
+    }
     return { text: pickUniqueLine(STREAK_10_LINES, ctx.playerName), mood: "shocked" };
   }
 
@@ -410,7 +439,7 @@ export function reactToMove(ctx: MoveContext): VarshiniLine | null {
 
   // Unit completed milestone
   if (ctx.unitCompleted) {
-    return { text: pickUniqueLine(EXTRA_CUTE_LINES, ctx.playerName), mood: "proud" };
+    return { text: pickUniqueLine(CARING_MOMENTS_LINES, ctx.playerName), mood: "proud" };
   }
 
   // Progress milestones
@@ -422,10 +451,16 @@ export function reactToMove(ctx: MoveContext): VarshiniLine | null {
     return { text: pickUniqueLine(PROGRESS_70_LINES, ctx.playerName), mood: "happy" };
   }
 
-  // Intelligent Frequency (Rule 29): Only speak on ~50% of routine correct moves
+  // Intelligent Frequency (70% friendly, 15% tease, 10% flirty, 5% bold/shy)
   if (moveCounter % 2 === 0) {
-    // 10% chance of playful tease on routine moves
-    if (Math.random() < 0.1) {
+    const rand = Math.random();
+    if (rand < 0.05) {
+      return { text: pickUniqueLine(SHY_FLIRT_LINES, ctx.playerName), mood: "playful" };
+    }
+    if (rand < 0.15) {
+      return { text: pickUniqueLine(BOLD_FLIRT_LINES, ctx.playerName), mood: "playful" };
+    }
+    if (rand < 0.30) {
       return { text: pickUniqueLine(PLAYFUL_TEASING_LINES, ctx.playerName), mood: "playful" };
     }
     return { text: pickUniqueLine(CORRECT_MOVE_LINES, ctx.playerName), mood: "happy" };
