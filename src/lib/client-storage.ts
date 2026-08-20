@@ -1,7 +1,6 @@
 "use client";
 
-// All persistence here is local-only (per-device) convenience data: it never
-// substitutes for the server's authoritative room state.
+// Persistence for local device convenience data & User session
 
 const KEYS = {
   playerName: "sudoku-live:player-name",
@@ -10,6 +9,8 @@ const KEYS = {
   bestTimes: "sudoku-live:best-times",
   soundEnabled: "sudoku-live:sound-enabled",
   spectatorId: "sudoku-live:spectator-id",
+  userSession: "sudoku-live:user-session",
+  activeRoomCode: "sudoku-live:active-room-code",
 };
 
 export interface RecentGame {
@@ -19,6 +20,13 @@ export interface RecentGame {
   status: string;
   elapsedSeconds: number;
   playedAt: number;
+}
+
+export interface UserSession {
+  id: number;
+  username: string;
+  displayName: string;
+  token: string;
 }
 
 function safeGet(key: string): string | null {
@@ -36,6 +44,15 @@ function safeSet(key: string, value: string) {
     window.localStorage.setItem(key, value);
   } catch {
     /* ignore quota errors */
+  }
+}
+
+function safeRemove(key: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    /* ignore */
   }
 }
 
@@ -115,4 +132,39 @@ export function getSpectatorId(): string {
     safeSet(KEYS.spectatorId, id);
   }
   return id;
+}
+
+// User Session Auth Helpers
+export function getStoredUser(): UserSession | null {
+  const raw = safeGet(KEYS.userSession);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as UserSession;
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredUser(user: UserSession) {
+  safeSet(KEYS.userSession, JSON.stringify(user));
+  if (user.displayName) {
+    setStoredPlayerName(user.displayName);
+  }
+}
+
+export function clearStoredUser() {
+  safeRemove(KEYS.userSession);
+}
+
+// Active Room Code (For Auto Resume on Tab Refresh / Close)
+export function getActiveRoomCode(): string | null {
+  return safeGet(KEYS.activeRoomCode);
+}
+
+export function setActiveRoomCode(code: string) {
+  safeSet(KEYS.activeRoomCode, code.toUpperCase());
+}
+
+export function clearActiveRoomCode() {
+  safeRemove(KEYS.activeRoomCode);
 }

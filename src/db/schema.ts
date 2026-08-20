@@ -9,6 +9,20 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 
+// Registered users table for One-Time Login / Auth & History
+export const users = pgTable(
+  "users",
+  {
+    id: serial("id").primaryKey(),
+    username: text("username").notNull().unique(), // lowercase username for lookup
+    displayName: text("display_name").notNull(),
+    passwordHash: text("password_hash").notNull(),
+    token: text("token").notNull().unique(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index("users_username_idx").on(table.username)],
+);
+
 // A "room" is a single Sudoku session created by a player.
 // It holds the puzzle, the live board state, and metadata used
 // both by the player's own client and by any spectators polling it.
@@ -19,6 +33,8 @@ export const rooms = pgTable(
     roomCode: text("room_code").notNull().unique(),
     playerName: text("player_name").notNull(),
     playerNameLower: text("player_name_lower").notNull(),
+    userId: integer("user_id"), // Optional link to registered user
+
     // Secret token only known to the creator's browser. Required on every
     // mutation so spectators (who only ever see roomCode) can never write.
     playerToken: text("player_token").notNull(),
@@ -51,8 +67,7 @@ export const rooms = pgTable(
   (table) => [index("rooms_player_name_lower_idx").on(table.playerNameLower)],
 );
 
-// Ephemeral heartbeat rows from spectators, used purely to compute a live
-// "N watching" count (a spectator is counted if it pinged in the last ~10s).
+// Ephemeral heartbeat rows from spectators
 export const spectatorPings = pgTable("spectator_pings", {
   id: serial("id").primaryKey(),
   roomId: integer("room_id").notNull(),

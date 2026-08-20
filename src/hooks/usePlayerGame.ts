@@ -3,10 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RoomPublicState } from "@/types/game";
 import type { ConnState } from "@/components/ConnectionStatus";
-import { getRoomToken } from "@/lib/client-storage";
+import { getRoomToken, isSoundEnabled, setActiveRoomCode, clearActiveRoomCode } from "@/lib/client-storage";
 import { greetingForRoom, reactToHint, reactToMove, reactToSpectatorJoin, reactToStuck, reactToVictory, type VarshiniLine } from "@/lib/varshini";
 import { playSound } from "@/lib/sound";
-import { isSoundEnabled } from "@/lib/client-storage";
 
 interface UsePlayerGameResult {
   room: RoomPublicState | null;
@@ -78,6 +77,11 @@ export function usePlayerGame(roomCode: string): UsePlayerGameResult {
             setRoom(data.room);
             setElapsed(data.room.elapsedSeconds);
             spectatorCountRef.current = data.room.spectatorCount;
+            if (data.room.status === "playing" || data.room.status === "paused") {
+              setActiveRoomCode(data.room.roomCode);
+            } else {
+              clearActiveRoomCode();
+            }
             setVarshiniLine(greetingForRoom(data.room.playerName));
             setConnState("connected");
             resetStuckTimer();
@@ -148,6 +152,9 @@ export function usePlayerGame(roomCode: string): UsePlayerGameResult {
         playSound("hint", enabled);
       } else if (data.moveResult.action === "place") {
         playSound(data.moveResult.correct ? "correct" : "wrong", enabled);
+        if (data.room.status === "completed" || data.room.status === "abandoned") {
+          clearActiveRoomCode();
+        }
         if (data.room.status === "completed") {
           setVarshiniLine(reactToVictory(data.room.elapsedSeconds, data.room.difficulty));
           playSound("victory", enabled);

@@ -1,15 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { DifficultySelector } from "@/components/DifficultySelector";
 import { RoomShareModal } from "@/components/RoomShareModal";
 import { VarshiniBot } from "@/components/VarshiniBot";
+import { UserAuthModal } from "@/components/UserAuthModal";
 import type { Difficulty, CreateRoomResponse } from "@/types/game";
-import { getStoredPlayerName, setStoredPlayerName, setRoomToken } from "@/lib/client-storage";
+import {
+  getStoredPlayerName,
+  setStoredPlayerName,
+  setRoomToken,
+  getStoredUser,
+  getActiveRoomCode,
+  getRoomToken,
+  setActiveRoomCode,
+  type UserSession,
+} from "@/lib/client-storage";
 import { reactToStart } from "@/lib/varshini";
 
 type Step = "name" | "difficulty" | "share";
@@ -17,11 +27,40 @@ type Step = "name" | "difficulty" | "share";
 export default function PlayPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("name");
+  const [user, setUser] = useState<UserSession | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
   const [name, setName] = useState(getStoredPlayerName());
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [createdRoom, setCreatedRoom] = useState<CreateRoomResponse | null>(null);
+
+  const [activeRoom, setActiveRoom] = useState<{ roomCode: string; token: string } | null>(null);
+
+  useEffect(() => {
+    const u = getStoredUser();
+    setUser(u);
+    if (u && u.displayName) {
+      setName(u.displayName);
+    }
+
+    // Check for unfinished active room
+    const code = getActiveRoomCode();
+    if (code) {
+      const token = getRoomToken(code);
+      if (token) {
+        fetch(`/api/rooms/${code}?token=${token}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (data && data.room && (data.room.status === "playing" || data.room.status === "paused")) {
+              setActiveRoom({ roomCode: code, token });
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, []);
 
   function validateName(value: string) {
     const trimmed = value.trim();
@@ -48,7 +87,11 @@ export default function PlayPage() {
       const res = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerName: name.trim(), difficulty }),
+        body: JSON.stringify({
+          playerName: name.trim(),
+          difficulty,
+          userToken: user?.token || undefined,
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -56,6 +99,7 @@ export default function PlayPage() {
       }
       const data: CreateRoomResponse = await res.json();
       setRoomToken(data.room.roomCode, data.playerToken);
+      setActiveRoomCode(data.room.roomCode);
       setCreatedRoom(data);
       setStep("share");
     } catch (e) {
@@ -69,9 +113,61 @@ export default function PlayPage() {
     <main className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-x-hidden px-5 py-10">
       <AnimatedBackground />
 
-      <Link href="/" className="absolute left-5 top-5 text-sm font-medium text-slate-400 hover:text-slate-200 safe-top">
-        ← Back
-      </Link>
+      <div className="absolute left-5 top-5 flex items-center gap-3 safe-top">
+        <Link href="/" className="text-sm font-medium text-slate-400 hover:text-slate-200">
+          ← Back
+        </Link>
+      </div>
+
+      <div className="absolute right-5 top-5 safe-top">
+        <button
+          onClick={() => setAuthModalOpen(true)}
+          className="glass flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10"
+        >
+          {user ? (
+            <>
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span>{user.displayName}</span>
+              <span className="text-slate-400">(History)</span>
+            </>
+          ) : (
+            <>
+              <span>🔑 Account / Login</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {activeRoom && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass-strong mb-6 w-full max-w-sm rounded-2xl border border-fuchsia-400/40 p-4 text-center shadow-lg shadow-fuchsia-950/40"
+        >
+          <p className="text-xs font-bold uppercase tracking-wider text-fuchsia-300">
+            ⚡ Unfinished Game Found!
+          </p>
+          <p className="mt-1 text-sm text-slate-200">
+            You left room <strong className="text-white">{activeRoom.roomCode}</strong> in progress.
+          </p>
+          <div className="mt-3">
+            <VarshiniBot
+              line={{
+                text: `Pondati! Unnoda unfinished Sudoku room (${activeRoom.roomCode}) ready-ah irukku. Continue pannalaama? 💜`,
+                mood: "playful",
+              }}
+              layout="floating"
+              size="sm"
+            />
+          </div>
+          <button
+            onClick={() => router.push(`/game/${activeRoom.roomCode}`)}
+            className="mt-3 w-full rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-violet-500/30"
+          >
+            ▶ RESUME WHERE YOU LEFT OFF →
+          </button>
+        </motion.div>
+      )}
 
       <AnimatePresence mode="wait">
         {step === "name" && (
@@ -100,7 +196,7 @@ export default function PlayPage() {
               onClick={handleNameSubmit}
               className="mt-6 w-full rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-500/30 hover:brightness-110"
             >
-              START GAME →
+              CONTINUE →
             </button>
 
             <div className="mt-6">
@@ -169,6 +265,16 @@ export default function PlayPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <UserAuthModal
+        open={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onUserChange={(u) => {
+          setUser(u);
+          if (u) setName(u.displayName);
+        }}
+        onResumeRoom={(code) => router.push(`/game/${code}`)}
+      />
     </main>
   );
 }

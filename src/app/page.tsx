@@ -1,20 +1,39 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { HeroSudokuPreview } from "@/components/HeroSudokuPreview";
 import { HowToPlayModal } from "@/components/StateViews";
 import { formatTime } from "@/components/GameHeader";
-import { getBestTime, getRecentGames, type RecentGame } from "@/lib/client-storage";
+import { UserAuthModal } from "@/components/UserAuthModal";
+import { VarshiniBot } from "@/components/VarshiniBot";
+import {
+  getBestTime,
+  getRecentGames,
+  getStoredUser,
+  getActiveRoomCode,
+  getRoomToken,
+  type RecentGame,
+  type UserSession,
+} from "@/lib/client-storage";
 
 export default function HomePage() {
+  const router = useRouter();
   const [howToOpen, setHowToOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const [user, setUser] = useState<UserSession | null>(null);
   const [recentGames, setRecentGames] = useState<RecentGame[]>([]);
   const [bestTimes, setBestTimes] = useState<Record<string, number | null>>({});
 
+  const [activeRoom, setActiveRoom] = useState<{ roomCode: string; token: string } | null>(null);
+
   useEffect(() => {
+    const u = getStoredUser();
+    setUser(u);
     setRecentGames(getRecentGames());
     setBestTimes({
       easy: getBestTime("easy"),
@@ -22,20 +41,86 @@ export default function HomePage() {
       hard: getBestTime("hard"),
       extreme: getBestTime("extreme"),
     });
+
+    // Check for active unfinished room
+    const code = getActiveRoomCode();
+    if (code) {
+      const token = getRoomToken(code);
+      if (token) {
+        fetch(`/api/rooms/${code}?token=${token}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (data && data.room && (data.room.status === "playing" || data.room.status === "paused")) {
+              setActiveRoom({ roomCode: code, token });
+            }
+          })
+          .catch(() => {});
+      }
+    }
   }, []);
 
   return (
     <main className="relative min-h-dvh w-full overflow-x-hidden">
       <AnimatedBackground />
 
-      <section className="mx-auto flex min-h-dvh max-w-5xl flex-col items-center justify-center px-5 py-16 text-center sm:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-1.5 text-xs font-medium text-violet-200"
+      <div className="absolute right-5 top-5 z-20 safe-top">
+        <button
+          onClick={() => setAuthModalOpen(true)}
+          className="glass flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-xs font-semibold text-slate-100 hover:bg-white/10"
         >
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> Real-time multiplayer spectating is live
-        </motion.div>
+          {user ? (
+            <>
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span>{user.displayName}</span>
+              <span className="text-slate-400">(Account)</span>
+            </>
+          ) : (
+            <>
+              <span>🔑 Account / Login / History</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      <section className="mx-auto flex min-h-dvh max-w-5xl flex-col items-center justify-center px-5 py-16 text-center sm:px-8">
+        {activeRoom ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-strong mb-6 w-full max-w-md rounded-3xl border border-fuchsia-400/50 p-5 text-center shadow-xl shadow-fuchsia-950/40"
+          >
+            <p className="text-xs font-bold uppercase tracking-wider text-fuchsia-300">
+              ⚡ UNFINISHED GAME FOUND!
+            </p>
+            <p className="mt-1 text-sm text-slate-200">
+              You have a game in progress (Room: <strong className="text-white">{activeRoom.roomCode}</strong>)
+            </p>
+            <div className="mt-3 flex justify-center">
+              <VarshiniBot
+                line={{
+                  text: `Pondati! Unnoda unfinished Sudoku room (${activeRoom.roomCode}) ready-ah irukku. Continue pannalaama? 💜`,
+                  mood: "playful",
+                }}
+                layout="panel"
+                size="sm"
+              />
+            </div>
+            <button
+              onClick={() => router.push(`/game/${activeRoom.roomCode}`)}
+              className="mt-4 w-full rounded-xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-violet-500 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-violet-500/30 hover:brightness-110"
+            >
+              ▶ RESUME UNFINISHED GAME NOW →
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-1.5 text-xs font-medium text-violet-200"
+          >
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> Real-time multiplayer spectating is live
+          </motion.div>
+        )}
 
         <div className="relative w-full">
           <div className="absolute inset-0 -z-10 mx-auto flex items-center justify-center opacity-40 sm:opacity-60">
@@ -132,6 +217,12 @@ export default function HomePage() {
       </section>
 
       <HowToPlayModal open={howToOpen} onClose={() => setHowToOpen(false)} />
+      <UserAuthModal
+        open={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onUserChange={setUser}
+        onResumeRoom={(code) => router.push(`/game/${code}`)}
+      />
     </main>
   );
 }
