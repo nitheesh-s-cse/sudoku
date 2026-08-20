@@ -62,7 +62,6 @@ export function SudokuBoard({
           const isGiven = puzzle[index] !== 0;
           const isSelected = index === selectedCell;
           const isPeer = r === selectedRow || c === selectedCol || box === selectedBox;
-          const isSameValue = selectedValue > 0 && value === selectedValue;
           const cellNotes = notes?.[index] ?? [];
 
           const isFlashing = flash?.cell === index;
@@ -73,7 +72,6 @@ export function SudokuBoard({
 
           let bg = "bg-transparent";
           if (isSelected) bg = "bg-violet-500/35";
-          else if (isSameValue) bg = "bg-fuchsia-500/20";
           else if (isPeer) bg = "bg-white/[0.04]";
 
           return (
